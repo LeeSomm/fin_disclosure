@@ -1,0 +1,10 @@
+
+# Environment variables file
+.env
+
+# Archived files
+archive/
+
+# Data files
+data/
+
