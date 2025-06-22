@@ -8,3 +8,5 @@ archive/
 # Hash files
 *.hash
 
+# Pycache
+__pycache__/
