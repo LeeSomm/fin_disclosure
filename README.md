@@ -1,10 +1,14 @@
 # Congressional Trading Monitor
 
-A Python-based system for monitoring and tracking Congressional financial disclosure filings, with automated extraction of trading data and notification capabilities.
+A Python-based system for monitoring and tracking Congressional financial 
+disclosure filings, with automated extraction of trading data and notification capabilities.
 
 ## Overview
 
-This project automatically scrapes Congressional financial disclosure filings from the House Clerk's website, extracts trading transaction data from PDF documents, and provides notifications for new trading activities by members of Congress.
+This project automatically scrapes Congressional (Representatives only at the moment) 
+financial disclosure filings from the House Clerk's website, extracts trading 
+transaction data from PDF documents, and provides notifications for new trading 
+activities by members of Congress. 
 
 ## Features
 
@@ -12,8 +16,8 @@ This project automatically scrapes Congressional financial disclosure filings fr
 - **PDF Processing**: Extracts trading transaction data from disclosure PDF documents
 - **Data Management**: Centralized JSON-based storage for filings and trading data
 - **Status Tracking**: Manages processing status of filings to avoid duplicate work
-- **Notification System**: Sends alerts for new trading activities
-- **Daily Automation**: Designed for scheduled daily runs to capture new filings
+- **Notification System**: Sends push notifications for new trading activities via the Bark API
+- **Daily Automation**: Designed for scheduled daily runs to capture new filings (bash script not included)
 
 ## Project Structure
 
@@ -21,14 +25,13 @@ This project automatically scrapes Congressional financial disclosure filings fr
 ├── daily_run.py              # Main orchestration script for daily processing
 ├── filing_scraper.py         # Scrapes Congressional financial disclosure filings
 ├── transaction_extractor.py  # Extracts trading data from PDF documents
-├── data_manager.py          # Centralized data access and JSON file operations
-├── filing_status_manager.py # Tracks processing status of filings
-├── notification_manager.py  # Handles notification delivery
-├── delete_filing.py         # Utility for removing filings from the database
-├── data/
-│   ├── congress_filings.json # Storage for scraped filing metadata
-│   └── trading_data.json     # Extracted trading transaction data
-└── archive/                 # Cached PDF files
+├── data_manager.py           # Centralized data access and JSON file operations
+├── filing_status_manager.py  # Tracks processing status of filings
+├── notification_manager.py   # Handles notification delivery
+├── delete_filing.py          # Utility for removing filings from the database
+└── data/
+    ├── congress_filings.json # Storage for scraped filing metadata
+    └── trading_data.json     # Extracted trading transaction data
 ```
 
 ## Key Components
@@ -39,7 +42,7 @@ The main orchestration class that coordinates the entire pipeline:
 2. Updates the trading database with new filings
 3. Identifies pending filings that need processing
 4. Processes PDF documents to extract trading data
-5. Sends notifications for new activities
+5. Sends notifications when new filings are processed
 
 ### FilingScraper
 Handles web scraping of the Congressional financial disclosure database:
@@ -114,14 +117,13 @@ Process specific PDF files:
 from transaction_extractor import TradingDataExtractor
 
 extractor = TradingDataExtractor()
-transactions = extractor.extract_from_pdf("path/to/filing.pdf")
+transactions = extractor.extract_trading_data("path/to/filing.pdf")
 ```
 
 ## Data Storage
 
 - **congress_filings.json**: Contains metadata for all scraped filings
 - **trading_data.json**: Stores extracted trading transaction data
-- **archive/**: Cached PDF files for processed documents
 
 ## Dependencies
 
@@ -132,14 +134,13 @@ transactions = extractor.extract_from_pdf("path/to/filing.pdf")
 - `python-dotenv`: Environment variable management
 - `aiohttp`: Async HTTP for notifications
 
-## Contributing
+## Next Steps
 
-When modifying the system:
-1. Maintain the modular architecture
-2. Update status tracking for new processing steps
-3. Ensure atomic data operations through DataManager
-4. Add appropriate error handling and retry logic
+1. Enforce better typing and validation with Pydantic
+2. Introduce unit testing with pytest
+3. Implement process for Senate financial disclosures
 
 ## License
 
-This project is for educational and transparency purposes to monitor Congressional trading activities in accordance with public disclosure requirements.
+This project is for educational and transparency purposes to monitor Congressional 
+trading activities in accordance with public disclosure requirements.
