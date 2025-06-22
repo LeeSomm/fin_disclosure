@@ -77,11 +77,11 @@ class FilingDeleter:
         # trading_backup = self.trading_data_path.with_suffix(f'.backup.{backup_timestamp}.json')
         
         # Save backups
-        with open(congress_backup, 'w') as f:
-            json.dump(congress_data, f, indent=2)
+        # with open(congress_backup, 'w') as f:
+        #     json.dump(congress_data, f, indent=2)
         
-        with open(trading_backup, 'w') as f:
-            json.dump(trading_data, f, indent=2)
+        # with open(trading_backup, 'w') as f:
+        #     json.dump(trading_data, f, indent=2)
         
         # Save updated files
         with open(self.congress_filings_path, 'w') as f:
@@ -90,9 +90,9 @@ class FilingDeleter:
         with open(self.trading_data_path, 'w') as f:
             json.dump(trading_data, f, indent=2)
         
-        print(f"✅ Data saved with backups:")
-        print(f"   - {congress_backup}")
-        print(f"   - {trading_backup}")
+        # print(f"✅ Data saved with backups:")
+        # print(f"   - {congress_backup}")
+        # print(f"   - {trading_backup}")
     
     def find_filing_by_pdf_id(self, pdf_id: str) -> Optional[tuple[str, Dict]]:
         """Find a filing by its PDF ID and return member_key and filing data."""
