@@ -154,6 +154,8 @@ class TradingDataExtractor:
             return "Purchase"
         elif ' S ' in line:
             return "Sale"
+        elif ' E ' in line:
+            return "Exchange"
         return "Unknown"
     
     # def _extract_asset_from_context(self, line: str, context_lines: List[str], ticker: str) -> str:
@@ -230,14 +232,18 @@ class TradingDataExtractor:
 
         for j in range(ticker_line_index):
             line_text = context_lines[j]
-
             if j == 0:
-                # Primary transaction markers (only in first line)
-                for marker in ["P ", "S "]:
-                    marker_index = line_text.find(marker)
-                    if marker_index != -1:
-                        line_text = line_text[:marker_index]
-                        break
+                # Remove owner code first for the primary line
+                owner_match = re.match(r'^(SP|DC|JT)\s+(.+)', line_text)
+                if owner_match:
+                    line_text = owner_match.group(2)
+                
+                # Then look for transaction markers and dates/amounts
+                # Find the first occurrence of P or S or E followed by space and date pattern
+                transaction_pattern = r'\s+[PSE]\s'
+                match = re.search(transaction_pattern, line_text)
+                if match:
+                    line_text = line_text[:match.start()]
             else:
                 # Secondary cutoff markers (in overflow lines, looks for dates, financial amounts - e.g., "$1", "$ 1", "- $")
                 for pattern in [r'\d{2}/\d{2}/\d{4}', r'\$\d', r'\$\s*\d', r'-\s*\$']:
@@ -250,6 +256,12 @@ class TradingDataExtractor:
 
         # Process final ticker line for any asset name prefix
         ticker_line_before_ticker = re.sub(rf'\s*\({re.escape(ticker)}\)\s*.*$', '', context_lines[ticker_line_index])
+        if ticker_line_index == 0:
+            # Remove owner code first for the primary line. 
+            owner_match = re.match(r'^(SP|DC|JT)\s+(.+)', ticker_line_before_ticker)
+            if owner_match:
+                ticker_line_before_ticker = owner_match.group(2)
+                
         asset_lines.append(ticker_line_before_ticker.strip())
 
         asset_name = ' '.join(asset_lines)

@@ -5,6 +5,6 @@
 # Archived files
 archive/
 
-# Data files
-data/
+# Hash files
+*.hash
 

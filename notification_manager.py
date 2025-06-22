@@ -34,9 +34,9 @@ class NotificationResponse:
     timestamp: Optional[str] = None
 
 
-class NotificationClient:
+class NotificationManager:
     """
-    Minimal client for sending notifications via Bark API.
+    Minimal manager for sending notifications via Bark API.
     
     Supports both GET and POST requests with basic retry logic.
     """
@@ -50,6 +50,10 @@ class NotificationClient:
         if base_url is None:
             base_url = os.getenv("BARK_BASE_URL", "https://api.day.app")
         self.base_url = base_url.rstrip('/')
+        
+        # Load notification icon from environment
+        self.notification_icon = os.getenv("NOTIFICATION_ICON")
+        
         self.max_retries = max_retries
         self.timeout = timeout
         self._session: Optional[aiohttp.ClientSession] = None
@@ -106,10 +110,15 @@ class NotificationClient:
         
         full_url = urljoin(self.base_url, path)
         
-        # Add URL parameter if provided
+        # Add parameters
+        params = []
         if url:
-            separator = "&" if "?" in full_url else "?"
-            full_url += f"{separator}url={quote(url, safe='')}"
+            params.append(f"url={quote(url, safe='')}")
+        if self.notification_icon:
+            params.append(f"icon={quote(self.notification_icon, safe='')}")
+        
+        if params:
+            full_url += "?" + "&".join(params)
         
         return full_url
     
@@ -179,6 +188,8 @@ class NotificationClient:
             data["subtitle"] = subtitle
         if url:
             data["url"] = url
+        if self.notification_icon:
+            data["icon"] = self.notification_icon
         
         async with self._session.post(endpoint_url, json=data) as response:
             return response.status == 200
@@ -204,8 +215,8 @@ class NotificationClient:
 
 # Usage example:
 async def example_usage():
-    """Example of how to use the notification client."""
-    client = NotificationClient()
+    """Example of how to use the notification manager."""
+    client = NotificationManager()
     
     async with client:
         # Test connection

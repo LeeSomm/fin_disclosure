@@ -72,9 +72,9 @@ class FilingDeleter:
         trading_data['last_updated'] = timestamp
         
         # Create backups
-        backup_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        congress_backup = self.congress_filings_path.with_suffix(f'.backup.{backup_timestamp}.json')
-        trading_backup = self.trading_data_path.with_suffix(f'.backup.{backup_timestamp}.json')
+        # backup_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # congress_backup = self.congress_filings_path.with_suffix(f'.backup.{backup_timestamp}.json')
+        # trading_backup = self.trading_data_path.with_suffix(f'.backup.{backup_timestamp}.json')
         
         # Save backups
         with open(congress_backup, 'w') as f:
@@ -158,7 +158,7 @@ class FilingDeleter:
         
         member_key, filing = result
         member_data = congress_data['members'][member_key]
-        pdf_url = filing['pdf_link']
+        # pdf_url = filing['pdf_link']
         
         print(f"📄 Found filing:")
         print(f"   - PDF ID: {pdf_id}")

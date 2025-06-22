@@ -1,10 +1,11 @@
 # Modified from enhanced_monitor.py
 
+import asyncio
 from datetime import datetime
 from data_manager import DataManager
 from filing_scraper import FilingScraper
 from filing_status_manager import FilingStatusManager
-from notification_manager import NotificationManager
+from notification_manager import NotificationManager, NotificationRequest, NotificationResponse
 from transaction_extractor import TradingDataExtractor
 import os
 import sys
@@ -54,8 +55,26 @@ class DailyRun:
             raise
 
         finally:
-            # TODO: Implement notifications
-            pass
+            if scrape_result["new_filings_count"] > 0:
+                try:
+                    # Notify about new filings
+                    # Send a notification with URL
+                    request = NotificationRequest(
+                        title="Congressional Trading Filing Alert",
+                        body=f"{scrape_result['new_filings_count']} new filing{'' if scrape_result['new_filings_count'] == 1 else 's'} detected. Click to view details.",
+                        url="https://www.etlode.com/congress-trading"
+                    )
+                    
+                    response: NotificationResponse = self._notify(request)
+                    
+                    if response.success:
+                        print("Notification sent successfully!")
+                    else:
+                        print(f"Failed to send notification: {response.error}")
+                    
+                except Exception as e:
+                    print(f"Failed to send notification: {e}")
+            
         
         # TODO: Combine the outputs into a summary report
         return scrape_result
@@ -278,8 +297,32 @@ class DailyRun:
         error_lower = error_message.lower()
         return any(pattern in error_lower for pattern in permanent_patterns)
     
+    def _notify(self, request: NotificationRequest) -> NotificationResponse:
+        """
+        Synchronous wrapper for async function.
 
+        Args:
+            request: NotificationRequest object containing notification details
 
+        Returns:
+            response: NotificationResponse object with success status
+        """
+        # Run the async notification in a new event loop
+        return asyncio.run(self._send_notification_async(request))
+
+    async def _send_notification_async(self, request: NotificationRequest) -> NotificationResponse:
+        """
+        Send notification asynchronously.
+
+        Args:
+            request: NotificationRequest object containing notification details
+
+        Returns:
+            response: NotificationResponse object with success status
+        """
+        async with self.notification_manager:
+            response = await self.notification_manager.send_notification(request)
+            return response
 
 
 
